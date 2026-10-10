@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jutsucam"
+version = "0.1.0"
+description = "Sellos de mano ninja ante la webcam para lanzar jutsus en tiempo real."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "opencv-contrib-python>=5.0",
+    "mediapipe>=1.1",
+    "numpy>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+jutsucam = "jutsucam.app:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
