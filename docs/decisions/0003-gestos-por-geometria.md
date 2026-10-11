@@ -16,3 +16,5 @@
 - No hay dependencias ni modelos nuevos, y todo es testeable sin cámara.
 - Los umbrales (`THUMB_MIN_LENGTH`, `HEART_*`) se calibran probando en vivo.
 - Si algún día hay decenas de sellos y las reglas no escalan, revisar la opción 2.
+
+**Actualización (fase 3, sello del Tigre):** con los dedos entrelazados, MediaPipe pierde la mano de detrás en ~50 % de los frames. Por eso el Tigre se reconoce con **una sola mano** (índice y corazón juntos hacia arriba, anular y meñique doblados), que funciona tanto si se detectan 1 como 2 manos. Los umbrales se calibraron con una grabación real.

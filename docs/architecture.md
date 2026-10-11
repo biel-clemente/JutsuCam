@@ -12,8 +12,8 @@ JutsuCam/
 │   │   ├── detector.py    # HandDetector (MediaPipe Hand Landmarker)
 │   │   └── drawing.py     # dibujo de los 21 puntos de la mano
 │   └── seals/             # reconocimiento de gestos y sellos (geometría pura, sin cámara)
-│       ├── gestures.py    # Gesture + reglas: corazón, pulgar arriba
-│       └── stabilizer.py  # un gesto solo cuenta si se mantiene N frames
+│       ├── gestures.py    # Gesture + reglas: corazón, pulgar arriba, tigre
+│       └── stabilizer.py  # un gesto cuenta si aparece en la mayoría de los últimos frames
 ├── tests/                 # pytest, un archivo por módulo
 ├── docs/
 │   ├── architecture.md    # este archivo
@@ -26,8 +26,8 @@ JutsuCam/
 1. `camera` abre la webcam y `app` lee cada frame BGR y lo espeja con `cv2.flip`.
 2. `hands.HandDetector.detect` devuelve las manos (21 landmarks cada una, en coordenadas 0-1).
 3. `hands.draw_landmarks` las pinta.
-4. `seals.recognize` decide qué gesto forman y `GestureStabilizer` lo confirma si se mantiene
-   `GESTURE_STABLE_FRAMES` frames seguidos.
+4. `seals.recognize` decide qué gesto forman y `GestureStabilizer` lo confirma si aparece en
+   `GESTURE_MIN_HITS` de los últimos `GESTURE_WINDOW_FRAMES` frames.
 5. `app` escribe el nombre del gesto y muestra el resultado. Se sale con `q`, `Esc` o cerrando la ventana.
 
 ## Cómo crecerá

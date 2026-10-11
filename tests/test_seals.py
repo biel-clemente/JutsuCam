@@ -3,7 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace as P
 
 from jutsucam.seals import Gesture, GestureStabilizer, recognize
-from jutsucam.seals.gestures import is_heart, is_thumbs_up
+from jutsucam.seals.gestures import is_heart, is_thumbs_up, is_tiger_hand
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -56,6 +56,22 @@ OPEN_PALM = [
     P(x=0.62, y=0.52),
     P(x=0.63, y=0.48),
 ]
+
+
+def with_points(hand, **points):
+    """Copia de la mano cambiando algunos puntos: with_points(h, p8=(x, y))."""
+    hand = list(hand)
+    for key, (x, y) in points.items():
+        hand[int(key[1:])] = P(x=x, y=y)
+    return hand
+
+
+# Índice y corazón juntos hacia arriba; anular y meñique doblados.
+TIGER = with_points(
+    OPEN_PALM, p8=(0.47, 0.40), p12=(0.49, 0.39), p16=(0.55, 0.60), p20=(0.59, 0.63)
+)
+# Igual, pero con índice y corazón separados en V.
+VICTORY = with_points(TIGER, p8=(0.40, 0.40), p12=(0.56, 0.38))
 
 
 def mirror_y(hand):
@@ -112,22 +128,59 @@ def test_sin_manos_no_hay_gesto():
     assert recognize([]) is None
 
 
-def test_estabilizador_confirma_tras_n_frames():
-    s = GestureStabilizer(frames=3)
+def test_estabilizador_confirma_con_mayoria():
+    s = GestureStabilizer(window=5, min_hits=3)
     assert s.update(Gesture.HEART) is None
     assert s.update(Gesture.HEART) is None
     assert s.update(Gesture.HEART) is Gesture.HEART
 
 
+def test_estabilizador_tolera_fallos_sueltos_al_confirmar():
+    # Con las manos juntas MediaPipe falla frames sueltos: no debe reiniciar la cuenta.
+    s = GestureStabilizer(window=5, min_hits=3)
+    for gesture in (Gesture.TIGER, None, Gesture.TIGER, None):
+        assert s.update(gesture) is None
+    assert s.update(Gesture.TIGER) is Gesture.TIGER
+
+
 def test_estabilizador_ignora_parpadeos():
-    s = GestureStabilizer(frames=3)
+    s = GestureStabilizer(window=5, min_hits=3)
     for _ in range(3):
         s.update(Gesture.HEART)
     assert s.update(None) is Gesture.HEART  # un frame suelto no lo quita
     assert s.update(Gesture.HEART) is Gesture.HEART
 
 
+def test_estabilizador_quita_el_gesto_cuando_desaparece():
+    s = GestureStabilizer(window=5, min_hits=3)
+    for _ in range(5):
+        s.update(Gesture.HEART)
+    for _ in range(3):
+        s.update(None)
+    assert s.current is None
+
+
 def test_corazon_real_capturado_con_la_camara():
     data = json.loads((FIXTURES / "heart_real.json").read_text(encoding="utf-8"))
     hands = [[P(**p) for p in hand] for hand in data]
     assert recognize(hands) is Gesture.HEART
+
+
+def test_tigre_con_una_mano():
+    assert is_tiger_hand(TIGER)
+    assert recognize([TIGER]) is Gesture.TIGER
+
+
+def test_victoria_no_es_tigre():
+    assert not is_tiger_hand(VICTORY)
+
+
+def test_mano_abierta_no_es_tigre():
+    assert not is_tiger_hand(OPEN_PALM)
+
+
+def test_tigre_real_capturado_con_la_camara():
+    data = json.loads((FIXTURES / "tiger_real.json").read_text(encoding="utf-8"))
+    hands = [[P(**p) for p in hand] for hand in data]
+    assert len(hands) == 2
+    assert recognize(hands) is Gesture.TIGER
