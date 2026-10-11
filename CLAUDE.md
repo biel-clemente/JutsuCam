@@ -24,6 +24,11 @@ Las decisiones técnicas se apuntan como ADR en `docs/decisions/NNNN-titulo.md`.
 - El modelo se descarga en la caché del usuario (`%LOCALAPPDATA%\jutsucam`), nunca dentro del repo.
 - Cada sello de mano nuevo lleva su test en `tests/`, con landmarks sintéticos (sin cámara).
 
+## Fases
+El proyecto avanza por fases, una cada vez. No adelantes trabajo de fases futuras.
+Al cerrar una fase: tests en verde, commit + push y actualizar la sección "Fases del proyecto" en Notion
+(qué se ha hecho, commits y estado de la siguiente fase). El plan de fases vive en Notion.
+
 ## Documentación del proyecto
 La gestión del proyecto (ideas, estado, jutsus planeados) está en Notion, en la página
 "JutsuCam" de CLEMENTE OS / PROYECTOS:

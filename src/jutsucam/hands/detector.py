@@ -8,7 +8,13 @@ import cv2
 import mediapipe as mp
 from mediapipe.tasks.python import BaseOptions, vision
 
-from jutsucam.config import MAX_HANDS, MODEL_DOWNLOAD_TIMEOUT_S, MODEL_PATH, MODEL_URL
+from jutsucam.config import (
+    HAND_MIN_CONFIDENCE,
+    MAX_HANDS,
+    MODEL_DOWNLOAD_TIMEOUT_S,
+    MODEL_PATH,
+    MODEL_URL,
+)
 
 
 def ensure_model(path=MODEL_PATH, url=MODEL_URL):
@@ -41,6 +47,8 @@ class HandDetector:
             base_options=BaseOptions(model_asset_path=str(model_path)),
             running_mode=vision.RunningMode.VIDEO,
             num_hands=num_hands,
+            min_hand_detection_confidence=HAND_MIN_CONFIDENCE,
+            min_hand_presence_confidence=HAND_MIN_CONFIDENCE,
         )
         self._landmarker = vision.HandLandmarker.create_from_options(options)
         self._start = time.monotonic()

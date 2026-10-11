@@ -13,6 +13,9 @@ MODEL_URL = (
 )
 MODEL_DOWNLOAD_TIMEOUT_S = 60
 MAX_HANDS = 2
+# Por defecto MediaPipe usa 0,5; con las manos pegadas (p. ej. el corazón) pierde una.
+HAND_MIN_CONFIDENCE = 0.3
+GESTURE_STABLE_FRAMES = 8  # ~0,25 s a 30 fps
 
 WINDOW_NAME = "JutsuCam"
 QUIT_KEYS = (27, ord("q"))  # Esc, q
